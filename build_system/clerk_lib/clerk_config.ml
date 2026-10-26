@@ -72,6 +72,7 @@ type backends_conf = {
   ocaml : backend_conf;
   c : backend_conf;
   python : backend_conf;
+  ruby : backend_conf;
   java : backend_conf;
 }
 
@@ -93,6 +94,7 @@ let default_backends_confs =
     ocaml = default_backend_conf;
     c = default_backend_conf;
     python = default_backend_conf;
+    ruby = default_backend_conf;
     java = default_backend_conf;
   }
 
@@ -234,16 +236,17 @@ let backends_table_encoding () =
   let backend_config = backend_config () in
   let open Clerk_toml_encoding in
   convt
-    (fun { ocaml; c; python; java } ->
+    (fun { ocaml; c; python; ruby; java } ->
       let ( ! ) c = if c = default_backend_conf then None else Some c in
-      !ocaml, !c, !python, !java)
-    (fun (ocaml, c, python, java) ->
+      !ocaml, !c, !python, !ruby, !java)
+    (fun (ocaml, c, python, ruby, java) ->
       let ( ! ) = Option.value ~default:default_backend_conf in
-      { ocaml = !ocaml; c = !c; python = !python; java = !java })
-  @@ table4
+      { ocaml = !ocaml; c = !c; python = !python; ruby = !ruby; java = !java })
+  @@ table5
        (table_opt ~name:"ocaml" backend_config)
        (table_opt ~name:"c" backend_config)
        (table_opt ~name:"python" backend_config)
+       (table_opt ~name:"ruby" backend_config)
        (table_opt ~name:"java" backend_config)
 
 let raw_config_encoding () =

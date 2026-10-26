@@ -12,7 +12,7 @@ export
 # Dependencies
 ##########################################
 
-EXECUTABLES = groff python3 node npm ninja pandoc
+EXECUTABLES = groff python3 ruby node npm ninja pandoc
 K := $(foreach exec,$(EXECUTABLES),\
         $(if $(shell which $(exec)),some string,$(warning [WARNING] No "$(exec)" executable found. \
 				Please install this executable for everything to work smoothly)))
@@ -254,12 +254,16 @@ backend-tests-%: $(CLERK_BIN) $(BACKEND_TESTS)
 
 backend-tests-python: BACKEND_ENV=$(PY_VENV_ACTIVATE)
 
+#> test-ruby-runtime			: Runs the unit tests of the Ruby runtime
+test-ruby-runtime:
+	ruby -I runtimes/ruby/lib -I stdlib/ruby -e 'Dir["runtimes/ruby/test/test_*.rb"].each { |f| require_relative f }'
+
 validate-py-runtime: dependencies-python
 	@$(PY_VENV_ACTIVATE) MYPYPATH=$(PWD)/runtimes/python/src/catala: mypy -p catala_runtime
 	@$(PY_VENV_ACTIVATE) PYTHONPATH=$(PWD)/runtimes/python/src/catala: mypy --follow-untyped-imports stdlib/python/*
 
 backend-tests:
-	@$(PY_VENV_ACTIVATE) $(CLERK_BIN) test tests --exe $(CATALA_BIN) --backend ocaml,c,python,java -c--disable-warnings
+	@$(PY_VENV_ACTIVATE) $(CLERK_BIN) test tests --exe $(CATALA_BIN) --backend ocaml,c,python,ruby,java -c--disable-warnings
 
 #> test					: Run interpreter tests
 test: .FORCE unit-tests

@@ -65,6 +65,7 @@ type backends_conf = {
   ocaml : backend_conf;
   c : backend_conf;
   python : backend_conf;
+  ruby : backend_conf;
   java : backend_conf;
 }
 

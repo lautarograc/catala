@@ -22,6 +22,7 @@ module OCaml = Ocaml
 module C = C
 module Java = Java
 module Python = Python
+module Ruby = Ruby
 
 module Backend_paths = Backend_paths (* for testing only *)
 (**/*)

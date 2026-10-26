@@ -1144,6 +1144,60 @@ module Commands = struct
         $ Cli.Flags.closure_conversion
         $ Cli.Flags.split_threshold)
 
+  let ruby
+      options
+      includes
+      stdlib
+      (output : Global.raw_file option)
+      optimize
+      check_invariants
+      autotest
+      closure_conversion
+      split_threshold =
+    let options =
+      if closure_conversion then disable_trace options else options
+    in
+    let prg, type_ordering, _ren_ctx =
+      Passes.scalc options ~includes ~stdlib ~optimize ~check_invariants
+        ~autotest ~closure_conversion ~keep_special_ops:false
+        ~dead_value_assignment:false ~no_struct_literals:false
+        ~keep_module_names:false ~monomorphize_types:false
+        ~renaming:(Some Scalc.To_ruby.renaming)
+        ~lift_pos:(Some Scalc.To_ruby.op_needs_pos) ~split_threshold
+        ~split_scope_var_defs:false
+    in
+    Message.debug "Compiling program into Ruby...";
+    get_output_format options output
+      ~ext:(if Global.options.gen_external then "template.rb" else "rb")
+    @@ fun output_file fmt ->
+    let default_module_name =
+      (* Programs that are not Catala modules still need to be wrapped in a Ruby
+         module: we name it after the file *)
+      match output_file, options.Global.input_src with
+      | Some file, _
+      | None, (FileName (file : File.t) | Contents (_, (file : File.t))) ->
+        File.remove_extension file |> Filename.basename |> File.remove_extension
+      | None, Stdin _ -> "Catala_program"
+    in
+    Scalc.To_ruby.format_program ~default_module_name output_file fmt prg
+      type_ordering
+
+  let ruby_cmd =
+    Cmd.v
+      (Cmd.info "ruby" ~man:Cli.man_base
+         ~doc:"Generates a Ruby translation of the Catala program.")
+      Term.(
+        const ruby
+        $ global_options
+        $ Cli.Flags.include_dirs
+        $ Cli.Flags.stdlib_dir
+        $ Cli.Flags.output
+        $ Cli.Flags.optimize
+        $ Cli.Flags.check_invariants
+        $ Cli.Flags.autotest
+        $ Cli.Flags.closure_conversion
+        $ Cli.Flags.split_threshold)
+
   let java
       options
       includes
@@ -1404,6 +1458,7 @@ module Commands = struct
       typecheck_cmd;
       ocaml_cmd;
       python_cmd;
+      ruby_cmd;
       java_cmd;
       c_cmd;
       latex_cmd;

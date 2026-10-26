@@ -146,16 +146,17 @@ let runtest_out =
         ~doc:"Write the test outcome to file $(b,OUTFILE) instead of stdout.")
 
 (* Todo: this should be extensible with the registration of new backends *)
-type backend = [ `C | `Interpret | `OCaml | `Python | `Java ]
+type backend = [ `C | `Interpret | `OCaml | `Python | `Ruby | `Java ]
 
 let backend_name = function
   | `Interpret -> "interpret"
   | `OCaml -> "ocaml"
   | `C -> "c"
   | `Python -> "python"
+  | `Ruby -> "ruby"
   | `Java -> "java"
 
-let all_backends = [`C; `Interpret; `OCaml; `Python; `Java]
+let all_backends = [`C; `Interpret; `OCaml; `Python; `Ruby; `Java]
 
 let backends =
   let open Arg in
@@ -184,9 +185,9 @@ let backends =
       & info ["backend"; "b"] ~docv:"BACKEND"
           ~doc:
             "Run the program using the given backend. $(docv) must be one of \
-             $(b,interpret), $(b,ocaml), $(b,c), $(b,python), $(b,java) or \
-             $(b,all). When set to $(b,all), all supported backends will be \
-             tested.")
+             $(b,interpret), $(b,ocaml), $(b,c), $(b,python), $(b,ruby), \
+             $(b,java) or $(b,all). When set to $(b,all), all supported \
+             backends will be tested.")
   in
   Term.(const (fun l -> List.flatten (List.flatten l)) $ arg)
 

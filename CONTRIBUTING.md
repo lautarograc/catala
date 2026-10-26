@@ -98,6 +98,7 @@ need more, here is how one can be added:
     - in `dcalc/interpreter.ml`, function `evaluate_operator`
     - in `../runtimes/ocaml/runtime.ml`
     - in `../runtimes/python/catala/src/catala/runtime.py`
+    - in `../runtimes/ruby/lib/catala_runtime.rb`
 - Update the syntax guide in `doc/syntax/syntax.tex` with your new builtin
 
 ### Contribution example: internationalization of the Catala syntax

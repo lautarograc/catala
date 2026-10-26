@@ -1,7 +1,7 @@
 (documentation
  (package catala))
 
-(dirs jsoo ocaml python java r rescript c)
+(dirs jsoo ocaml python ruby java r rescript c)
 
 ; Installation is done as source under catala lib directory
 ; For dev version this makes it easy to install the proper runtime with just
@@ -31,6 +31,14 @@
  (package catala)
  (source_trees
   (python as runtime/python))
+ (section lib))
+
+; Ruby runtime
+
+(install
+ (package catala)
+ (source_trees
+  (ruby as runtime/ruby))
  (section lib))
 
 (install

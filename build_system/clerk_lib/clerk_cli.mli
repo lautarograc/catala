@@ -18,7 +18,7 @@
 open Cmdliner
 open Catala_utils
 
-type backend = [ `C | `Interpret | `OCaml | `Python | `Java ]
+type backend = [ `C | `Interpret | `OCaml | `Python | `Ruby | `Java ]
 
 (** {2 Flags and options} *)
 

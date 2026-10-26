@@ -107,7 +107,7 @@ let test_pythonpath_separator () =
         (Backend_paths.pythonpath [{|/build/python|}; {|/proj/tests|}]))
 
 (* A position literal embeds the source filename; on Windows its backslashes are
-   an illegal escape (Java/Python) or silently wrong (C/OCaml) in the target
+   an illegal escape (Java/Python) or silently wrong (C/OCaml/Ruby) in the target
    string literal unless [format_pos] escapes them. *)
 
 let contains ~sub s =
@@ -123,6 +123,7 @@ let backends_format_pos =
   [
     "Java", Scalc.To_java.format_pos;
     "Python", Scalc.To_python.format_pos;
+    "Ruby", Scalc.To_ruby.format_pos;
     "C", Scalc.To_c.format_pos;
     "OCaml", Lcalc.To_ocaml.format_pos;
   ]

@@ -287,7 +287,7 @@ let print_diff ppf p1 p2 =
     |> printer ppf
 
 let catala_commands_with_output_flag =
-  ["makefile"; "html"; "latex"; "ocaml"; "python"; "java"; "r"; "c"]
+  ["makefile"; "html"; "latex"; "ocaml"; "python"; "ruby"; "java"; "r"; "c"]
 
 let pfile =
   let open File in
@@ -521,6 +521,7 @@ let summary ~build_dir ?(backend_tests = []) tests =
             | `OCaml -> "OCaml"
             | `C -> "C"
             | `Python -> "Python"
+            | `Ruby -> "Ruby"
             | `Java -> "Java"
           in
           String.Map.update bk

@@ -10,5 +10,7 @@
   (glob_files_rec
    (java/* with_prefix runtime/java))
   (glob_files_rec
-   (python/* with_prefix runtime/python)))
+   (python/* with_prefix runtime/python))
+  (glob_files_rec
+   (ruby/* with_prefix runtime/ruby)))
  (section lib))

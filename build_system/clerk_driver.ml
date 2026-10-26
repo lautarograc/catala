@@ -81,6 +81,7 @@ let backend_to_config = function
   | `Interpret | `OCaml -> Clerk_backend.OCaml.T
   | `C -> Clerk_backend.C.T
   | `Python -> Clerk_backend.Python.T
+  | `Ruby -> Clerk_backend.Ruby.T
   | `Java -> Clerk_backend.Java.T
 
 let backends_to_config bks =
@@ -119,7 +120,7 @@ let linking_command ~build_dir ~backend ~info item target =
     in
     Var.expr_to_list ~var_bindings
       (List.map (fun w -> Nj.Expr.Word w) rule.Config.commandline)
-  | (`OCaml | `Python | `C | `Java) as bk ->
+  | (`OCaml | `Python | `Ruby | `C | `Java) as bk ->
     let module B = (val Clerk_backend.get (backend_to_config bk)) in
     B.linking_command ~build_dir ~var_bindings link_deps item target
 
@@ -197,6 +198,7 @@ let config_backend = function
   | Clerk_backend.OCaml.T -> `OCaml
   | Clerk_backend.C.T -> `C
   | Clerk_backend.Python.T -> `Python
+  | Clerk_backend.Ruby.T -> `Ruby
   | Clerk_backend.Java.T -> `Java
   | _ -> invalid_arg __FUNCTION__
 
@@ -218,6 +220,7 @@ let make_target ~build_dir ~backend ?(main_exec = false) ?force_ext item =
     | `OCaml -> (dir / "ocaml" / base) -.- "cmx"
     | `C -> (dir / "c" / base) -.- "o"
     | `Python -> (dir / "python" / base) -.- "py"
+    | `Ruby -> (dir / "ruby" / base) -.- "rb"
     | `Java when item.is_stdlib ->
       (dir / "java" / "catala" / "stdlib" / base) -.- "class"
     | `Java -> (dir / "java" / base) -.- "class"
@@ -611,7 +614,7 @@ let ninja_run_targets
     items
     info
     { clerk_targets; modules; directories; source_files; direct_targets } :
-    (Scan.item * [< `Interpret | `OCaml | `C | `Python | `Java ]) list
+    (Scan.item * [< `Interpret | `OCaml | `C | `Python | `Ruby | `Java ]) list
     * Nj.Expr.t =
   let build_dir = config.Cli.file.global.build_dir in
   let item_exec_target ?backends:explicit_backends it =
@@ -956,7 +959,7 @@ let run_targets
       let code, lines = Clerk_cli.run_command_line ~quiet cmd in
       if code <> 0 && quiet then List.iter print_endline lines;
       test_target, if test then count_success item lines else code, 0
-    | (`C | `OCaml | `Python | `Java) as backend -> (
+    | (`C | `OCaml | `Python | `Ruby | `Java) as backend -> (
       let link_cmd = linking_command ~build_dir ~backend ~info in
       let cmd = link_cmd item target in
       if cmd <> [] then (
@@ -1033,7 +1036,7 @@ let build_cmd : int Cmd.t =
       build_objects
       (ninja_flags : string list) =
     let backends =
-      if backends = [] then [`OCaml; `C; `Python; `Java] else backends
+      if backends = [] then [`OCaml; `C; `Python; `Ruby; `Java] else backends
     in
     let config =
       if build_objects then { config with Cli.include_objects = true }
@@ -1261,7 +1264,7 @@ let clean_cmd =
 let test_cmd =
   let run
       (config, target_args)
-      (backends : [ `Interpret | `OCaml | `C | `Python | `Java ] list)
+      (backends : [ `Interpret | `OCaml | `C | `Python | `Ruby | `Java ] list)
       (reset_test_outputs : bool)
       verbosity
       (report_format : [ `Terminal | `JUnitXML | `VSCodeJSON ])
@@ -1536,7 +1539,7 @@ let ci_cmd =
       (ninja_flags : string list) =
     let backends =
       match backends with
-      | [] -> [`Interpret; `OCaml; `C; `Python; `Java]
+      | [] -> [`Interpret; `OCaml; `C; `Python; `Ruby; `Java]
       | b when not (List.mem `Interpret b) -> `Interpret :: b
       (* Autotests always require the interpret (OCaml) objects *)
       | b -> b

@@ -3,6 +3,10 @@
 One line per change, be concise and explicit. Document only external changes
 in behavior visible for the end-users of the tooling.
 
+* New Ruby backend: `catala ruby` generates Ruby code from Catala programs,
+  relying on the runtime in `runtimes/ruby`; it is also available in clerk
+  (`--backend ruby`, `[ruby]` section of `clerk.toml`).
+
 * [#1142](https://github.com/CatalaLang/catala/pull/1142) Traces now report
   the declaration position of local variables and tuples
 
